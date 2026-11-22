@@ -1,0 +1,10 @@
+import ReportForm from './ReportForm.jsx';
+import { PageIntro } from './UI.jsx';
+
+export function ReportPage() {
+  return <main className="page-shell"><PageIntro eyebrow="REPORT AN ANIMAL" title="Help starts with what you notice." description="Tell us what is happening, where the animal is, and what kind of care could help. A volunteer can follow up after the report is reviewed."/><div className="container page-body"><div className="two-column"><ReportForm/><aside className="content-stack"><div className="surface"><div className="surface-title">A safer way to help</div><p className="surface-copy">Keep a calm distance, avoid sudden movements, and never put yourself in danger. If the animal is aggressive or close to traffic, note that in the description and wait for trained help.</p></div><div className="notice-band"><strong>What happens next?</strong><br/>Your report is saved as Pending. An administrator verifies it, then volunteers can accept it and keep you updated as care progresses.</div></aside></div></div></main>;
+}
+
+export function RescuePage() {
+  return <main className="page-shell"><PageIntro eyebrow="REQUEST RESCUE" title="A little more urgent? Start here." description="If an animal is hurt or in immediate danger, share a clear location and the assistance needed. Mark the priority so rescuers can triage safely."/><div className="container page-body"><div className="two-column"><ReportForm rescueMode/><aside className="content-stack"><div className="surface"><div className="surface-title">When every minute matters</div><p className="surface-copy">Choose Emergency for severe injuries, Urgent for illness or injury, and Normal for food or shelter needs. Never attempt a risky rescue alone.</p></div><div className="surface"><div className="surface-title">Follow the response</div><p className="surface-copy">Once the report is reviewed, a volunteer may accept the case. Your dashboard shows Accepted, In Progress, or Resolved so you know where help stands.</p></div></aside></div></div></main>;
+}

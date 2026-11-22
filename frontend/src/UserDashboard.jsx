@@ -1,0 +1,15 @@
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { api } from './client.js';
+import { useAuth } from './AuthContext.jsx';
+import DashboardLayout from './DashboardLayout.jsx';
+import { Alert, EmptyState, Loading, PageSection, PriorityBadge, StatusBadge } from './UI.jsx';
+export default function UserDashboard() {
+  const { token, user } = useAuth();
+  const [reports, setReports] = useState([]);
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  useEffect(() => { Promise.all([api.myReports(token), api.lostFound()]).then(([reportData, petData]) => { setReports(reportData.reports || []); setItems((petData.items || []).filter((item) => String(item.reporterId?._id || item.reporterId) === String(user.id || user._id))); }).catch((e) => setError(e.message)).finally(() => setLoading(false)); }, [token, user]);
+  return <DashboardLayout><div className="stat-grid"><div className="stat-card"><span>Rescue reports</span><strong>{reports.length}</strong></div><div className="stat-card"><span>Resolved cases</span><strong>{reports.filter((item) => item.status === 'Resolved').length}</strong></div><div className="stat-card"><span>Lost / found posts</span><strong>{items.length}</strong></div><div className="stat-card"><span>Account</span><strong style={{ fontSize: 17, marginTop: 12 }}>Community</strong></div></div>{error && <Alert kind="error">{error}</Alert>}{loading ? <Loading/> : <><PageSection title="My animal reports" detail="Follow the response status and see which cases are verified.">{reports.length ? <div className="data-list">{reports.map((report) => <div className="data-row" key={report._id}><div className="data-main"><strong>{report.animalType} · {report.location?.address || 'Location pinned'}</strong><span>{report.description}</span><span>{report.verified ? 'Verified for volunteer response' : 'Waiting for report review'}</span></div><div className="case-meta"><PriorityBadge value={report.priority}/><StatusBadge value={report.status}/></div></div>)}</div> : <EmptyState title="Your first report will show here" text="Once you submit an animal report, track verification and rescue updates from this page." action={<Link className="button button-primary button-small" to="/report">Report an animal</Link>}/>}</PageSection><PageSection title="Lost & found posts" detail="Keep your community notices in one place">{items.length ? <div className="data-list">{items.map((item) => <div key={item._id} className="data-row"><div className="data-main"><strong>{item.type === 'lost' ? 'Lost' : 'Found'} · {item.animalType}</strong><span>{item.description}</span></div><StatusBadge value={item.status}/></div>)}</div> : <EmptyState title="Looking for a pet or found one?" text="Post a community notice with a description, contact details, and location." action={<Link className="button button-outline button-small" to="/lost-found">Open lost & found</Link>}/>}</PageSection></>}</DashboardLayout>;
+}
