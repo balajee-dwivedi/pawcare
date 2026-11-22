@@ -45,7 +45,7 @@ app.use('/api', (_req, _res, next) => next(new HttpError(404, 'API route not fou
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(clientDist));
-  app.get('*', (req, res, next) => {
+  app.get('/{*splat}', (req, res, next) => {
     if (req.path.startsWith('/api/')) return next();
     res.sendFile(path.join(clientDist, 'index.html'));
   });
