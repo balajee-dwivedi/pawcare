@@ -1,54 +1,34 @@
-import nodemailer from 'nodemailer';
-
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT || 587),
-  secure: Number(process.env.SMTP_PORT) === 465,
-  connectionTimeout: 10000,
-  greetingTimeout: 10000,
-  socketTimeout: 10000,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
-
 async function sendEmail({ to, subject, text, html }) {
+  const apiKey = process.env.BREVO_API_KEY;
   const senderEmail = process.env.MAIL_FROM;
 
-  // Use Brevo's HTTPS API in production (Render free tier blocks outbound SMTP ports)
-  if (process.env.BREVO_API_KEY) {
-    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
-      method: 'POST',
-      headers: {
-        'api-key': process.env.BREVO_API_KEY,
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      body: JSON.stringify({
-        sender: { name: 'PawCare', email: senderEmail },
-        to: [{ email: to }],
-        subject,
-        textContent: text,
-        htmlContent: html,
-      }),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Brevo API error (${response.status}): ${errorText}`);
-    }
-    return;
+  if (!apiKey) {
+    throw new Error('BREVO_API_KEY is missing in environment variables');
+  }
+  if (!senderEmail) {
+    throw new Error('MAIL_FROM is missing in environment variables');
   }
 
-  // Local fallback via SMTP
-  await transporter.sendMail({
-    from: senderEmail ? `PawCare <${senderEmail}>` : undefined,
-    to,
-    subject,
-    text,
-    html,
+  const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+    method: 'POST',
+    headers: {
+      'api-key': apiKey,
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+    body: JSON.stringify({
+      sender: { name: 'PawCare', email: senderEmail },
+      to: [{ email: to }],
+      subject,
+      textContent: text,
+      htmlContent: html,
+    }),
   });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Brevo API error (${response.status}): ${errorText}`);
+  }
 }
 
 export async function sendVerificationEmail(to, code) {
