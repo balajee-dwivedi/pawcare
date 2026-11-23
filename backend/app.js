@@ -21,6 +21,7 @@ const uploadDir = path.resolve(currentDir, process.env.UPLOAD_DIR || 'uploads');
 const clientDist = path.resolve(projectRoot, 'frontend/dist');
 
 app.disable('x-powered-by');
+app.set('trust proxy', 1);
 app.use(cors({ origin: process.env.CLIENT_ORIGIN?.split(',') || true }));
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true, limit: '1mb' }));

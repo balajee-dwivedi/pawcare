@@ -4,15 +4,55 @@ const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
   port: Number(process.env.SMTP_PORT || 587),
   secure: Number(process.env.SMTP_PORT) === 465,
+  connectionTimeout: 10000,
+  greetingTimeout: 10000,
+  socketTimeout: 10000,
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
   },
 });
 
-export async function sendVerificationEmail(to, code) {
+async function sendEmail({ to, subject, text, html }) {
+  const senderEmail = process.env.MAIL_FROM;
+
+  // Use Brevo's HTTPS API in production (Render free tier blocks outbound SMTP ports)
+  if (process.env.BREVO_API_KEY) {
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        'api-key': process.env.BREVO_API_KEY,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        sender: { name: 'PawCare', email: senderEmail },
+        to: [{ email: to }],
+        subject,
+        textContent: text,
+        htmlContent: html,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Brevo API error (${response.status}): ${errorText}`);
+    }
+    return;
+  }
+
+  // Local fallback via SMTP
   await transporter.sendMail({
-    from: process.env.MAIL_FROM,
+    from: senderEmail ? `PawCare <${senderEmail}>` : undefined,
+    to,
+    subject,
+    text,
+    html,
+  });
+}
+
+export async function sendVerificationEmail(to, code) {
+  await sendEmail({
     to,
     subject: 'Your PawCare verification code',
     text: `Your PawCare verification code is ${code}. It expires in 10 minutes. If you didn't request this, you can ignore this email.`,
@@ -30,8 +70,7 @@ export async function sendVerificationEmail(to, code) {
 }
 
 export async function sendPasswordResetEmail(to, link) {
-  await transporter.sendMail({
-    from: process.env.MAIL_FROM,
+  await sendEmail({
     to,
     subject: 'Reset your PawCare password',
     text: `Use this link to reset your PawCare password:\n\n${link}\n\nThe link expires in 30 minutes. If you didn't ask for this, you can ignore this email.`,
