@@ -47,11 +47,11 @@ router.post(
   validateRequest,
   login
 );
+
 router.post('/forgot-password', codeLimiter, forgotPassword);
 router.post('/reset-password', codeLimiter, resetPassword);
 router.get('/me', authenticate, me);
 router.post('/send-code', authenticate, codeLimiter, sendVerificationCode);
 router.post('/verify-code', authenticate, codeLimiter, verifyEmailCode);
-router.post('/forgot-password', forgotPassword);
-router.post('/reset-password', resetPassword);
+
 export default router;

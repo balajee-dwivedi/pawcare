@@ -48,6 +48,14 @@ export const optionalAuthenticate = asyncHandler(async (req, _res, next) => {
   next();
 });
 
+/** Block unverified accounts from accessing protected actions until OTP verification completes. */
+export const requireVerified = (req, _res, next) => {
+  if (!req.user?.emailVerified) {
+    return next(new HttpError(403, 'Please verify your email address to continue.'));
+  }
+  next();
+};
+
 /** Restrict a route to one or more account roles. */
 export const allowRoles =
   (...roles) =>

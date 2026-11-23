@@ -26,9 +26,23 @@ export const register = asyncHandler(async (req, res) => {
   const role = SIGNUP_ROLES.includes(req.body.role) ? req.body.role : 'user';
 
   const normalizedEmail = email.trim().toLowerCase();
-  if (await User.exists({ email: normalizedEmail }))
+  const existing = await User.findOne({ email: normalizedEmail });
+
+  if (existing && existing.emailVerified) {
     throw new HttpError(409, 'An account with this email already exists.');
+  }
+
   const passwordHash = await bcrypt.hash(password, 12);
+
+  if (existing && !existing.emailVerified) {
+    existing.name = name.trim();
+    existing.phone = phone.trim();
+    existing.password = passwordHash;
+    existing.role = role;
+    await existing.save();
+    return res.status(200).json({ token: signToken(existing), user: publicUser(existing) });
+  }
+
   const user = await User.create({
     name: name.trim(),
     email: normalizedEmail,
@@ -51,6 +65,7 @@ export const login = asyncHandler(async (req, res) => {
 });
 
 export const me = asyncHandler(async (req, res) => res.json({ user: publicUser(req.user) }));
+
 const RESET_MINUTES = 30;
 const RESET_COOLDOWN_MS = 60 * 1000;
 const GENERIC_RESET_MESSAGE =
