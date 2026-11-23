@@ -1675,3 +1675,33 @@ h1 em {
 .map-search-results button:hover {
   background: #f2f5ee;
 }
+
+.password-field-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.password-field-input {
+  width: 100%;
+  padding-right: 2.6rem !important;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 0.65rem;
+  background: transparent;
+  border: none;
+  padding: 0.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #6b7280;
+  transition: color 0.15s ease;
+}
+
+.password-toggle-btn:hover {
+  color: #111827;
+}

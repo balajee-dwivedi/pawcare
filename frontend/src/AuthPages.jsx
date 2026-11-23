@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-do
 import { useAuth } from './AuthContext.jsx';
 import { api } from './client.js';
 import { Alert, PawMark } from './UI.jsx';
+import PasswordInput from './PasswordInput.jsx';
 
 function destinationFor(role) {
   return ({ user: '/dashboard', volunteer: '/volunteer', shelter: '/shelter', admin: '/admin' })[role] || '/dashboard';
@@ -145,7 +146,7 @@ export function LoginPage() {
           </div>
           <div className="form-field">
             <label htmlFor="password">Password</label>
-            <input type="password" id="password" name="password" required autoComplete="current-password" placeholder="Your password" />
+            <PasswordInput id="password" name="password" required autoComplete="current-password" placeholder="Your password" />
           </div>
           <div style={{ textAlign: 'right', marginTop: -6 }}>
             <Link
@@ -232,11 +233,11 @@ export function RegisterPage() {
           </div>
           <div className="form-field">
             <label htmlFor="password">Password</label>
-            <input type="password" id="password" name="password" required minLength="8" autoComplete="new-password" placeholder="At least 8 characters" />
+            <PasswordInput id="password" name="password" required minLength="8" autoComplete="new-password" placeholder="At least 8 characters" />
           </div>
           <div className="form-field">
             <label htmlFor="confirmPassword">Confirm password</label>
-            <input type="password" id="confirmPassword" name="confirmPassword" required minLength="8" autoComplete="new-password" placeholder="Type it again" />
+            <PasswordInput id="confirmPassword" name="confirmPassword" required minLength="8" autoComplete="new-password" placeholder="Type it again" />
           </div>
           <button className="button button-primary" disabled={busy}>{busy ? 'Creating account…' : 'Create account'}</button>
         </form>
@@ -335,11 +336,11 @@ export function ResetPasswordPage() {
             <form className="auth-fields" onSubmit={submit}>
               <div className="form-field">
                 <label htmlFor="password">New password</label>
-                <input type="password" id="password" name="password" required minLength="8" autoComplete="new-password" placeholder="At least 8 characters" />
+                <PasswordInput id="password" name="password" required minLength="8" autoComplete="new-password" placeholder="At least 8 characters" />
               </div>
               <div className="form-field">
                 <label htmlFor="confirmPassword">Confirm new password</label>
-                <input type="password" id="confirmPassword" name="confirmPassword" required minLength="8" autoComplete="new-password" placeholder="Type it again" />
+                <PasswordInput id="confirmPassword" name="confirmPassword" required minLength="8" autoComplete="new-password" placeholder="Type it again" />
               </div>
               <button className="button button-primary" disabled={busy}>{busy ? 'Saving…' : 'Save new password'}</button>
             </form>
