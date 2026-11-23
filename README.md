@@ -37,22 +37,24 @@ A full-stack neighborhood network for stray animal rescue, lost-and-found report
 ├── frontend/
 │   └── src/              # React pages, Mapbox components, auth flows & API client
 └── Dockerfile            # Multi-stage production container build
-Local Setup
-1. Prerequisites
-Node.js 20+
+```
 
-MongoDB (local instance or MongoDB Atlas URI)
+## Local Setup
 
-Mapbox public access token (VITE_MAPBOX_TOKEN)
+### 1. Prerequisites
 
-Brevo API key (BREVO_API_KEY) and verified sender email (MAIL_FROM)
+- Node.js 20+
+- MongoDB (local instance or MongoDB Atlas URI)
+- Mapbox public access token (`VITE_MAPBOX_TOKEN`)
+- Brevo API key (`BREVO_API_KEY`) and verified sender email (`MAIL_FROM`)
 
-2. Configure Environment Variables
-Create backend/.env and frontend/.env:
+### 2. Configure Environment Variables
 
-backend/.env
+Create `backend/.env` and `frontend/.env`:
 
-Code snippet
+**`backend/.env`**
+
+```env
 NODE_ENV=development
 API_PORT=3001
 MONGODB_URI=mongodb://127.0.0.1:27017/pawcare
@@ -62,12 +64,17 @@ FRONTEND_URL=http://localhost:3000
 CLIENT_ORIGIN=http://localhost:3000
 BREVO_API_KEY=xkeysib-your_brevo_api_key
 MAIL_FROM=your_verified_sender@example.com
-frontend/.env
+```
 
-Code snippet
+**`frontend/.env`**
+
+```env
 VITE_MAPBOX_TOKEN=pk.your_mapbox_public_token
-3. Install & Run
-Bash
+```
+
+### 3. Install & Run
+
+```bash
 # Start backend API (port 3001)
 cd backend
 npm install
@@ -77,9 +84,13 @@ node index.js
 cd frontend
 npm install
 npm run dev
-Docker Deployment
-The root Dockerfile builds the Vite frontend and bundles it into the Express server on port 3000 (or Render's PORT):
+```
 
-Bash
+## Docker Deployment
+
+The root `Dockerfile` builds the Vite frontend and bundles it into the Express server on port `3000` (or Render's `PORT`):
+
+```bash
 docker build --build-arg VITE_MAPBOX_TOKEN=pk.your_token -t pawcare .
 docker run -p 3000:3000 --env-file backend/.env -e NODE_ENV=production pawcare
+```
